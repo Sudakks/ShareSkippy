@@ -25,9 +25,19 @@ progress::-webkit-progress-value {
     @apply text-black;
   }
   
-  /* Ensure all form elements have white backgrounds */
+  /* Ensure all form elements have white backgrounds and black text */
   input, textarea, select {
-    @apply bg-white;
+    @apply bg-white text-black;
+  }
+  
+  /* Ensure input text is black when typing */
+  input::placeholder, textarea::placeholder {
+    @apply text-gray-500;
+  }
+  
+  /* Override any gray text classes on form inputs */
+  input.text-gray-900, textarea.text-gray-900, select.text-gray-900 {
+    @apply text-black !important;
   }
   
   /* Ensure checkboxes have white backgrounds with specific styling */

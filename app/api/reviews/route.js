@@ -91,13 +91,12 @@ export async function POST(request) {
       return NextResponse.json({ error: 'You can only review completed meetings' }, { status: 400 });
     }
 
-    // Validate that meeting ended at least 24 hours ago
+    // Validate that meeting has ended
     const meetingEndTime = new Date(meeting.end_datetime);
     const now = new Date();
-    const hoursSinceEnd = (now - meetingEndTime) / (1000 * 60 * 60);
     
-    if (hoursSinceEnd < 24) {
-      return NextResponse.json({ error: 'You can only review meetings that ended at least 24 hours ago' }, { status: 400 });
+    if (now < meetingEndTime) {
+      return NextResponse.json({ error: 'You can only review meetings that have ended' }, { status: 400 });
     }
 
     // Determine reviewee (the other participant)

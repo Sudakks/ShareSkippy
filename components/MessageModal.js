@@ -94,7 +94,7 @@ export default function MessageModal({ isOpen, onClose, recipient, availabilityP
               type="text"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
               placeholder={`Re: ${availabilityPost?.title || 'Availability Post'}`}
             />
           </div>
@@ -107,7 +107,7 @@ export default function MessageModal({ isOpen, onClose, recipient, availabilityP
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={4}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
               placeholder="Type your message here..."
               required
             />

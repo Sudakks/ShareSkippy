@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from '@/libs/supabase/client';
+import { useSupabaseAuth } from '@/libs/supabase/hooks';
 import PhotoUpload from '@/components/ui/PhotoUpload';
 
 export default function AddDogPage() {
@@ -208,7 +209,7 @@ export default function AddDogPage() {
                 value={formData.name}
                 onChange={handleInputChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black"
                 placeholder="Enter your dog&apos;s name"
               />
             </div>
@@ -223,7 +224,7 @@ export default function AddDogPage() {
                 name="breed"
                 value={formData.breed}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black"
                 placeholder="e.g., Golden Retriever, Mixed Breed"
               />
             </div>
@@ -240,7 +241,7 @@ export default function AddDogPage() {
                 onChange={handleInputChange}
                 required
                 max={new Date().toISOString().split('T')[0]}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black"
               />
               {formData.birthday && (
                 <p className="text-sm text-gray-500 mt-1">
@@ -259,7 +260,7 @@ export default function AddDogPage() {
                   name="size"
                   value={formData.size}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black"
                 >
                   <option value="0-10">0-10 lbs</option>
                   <option value="11-25">11-25 lbs</option>
@@ -278,7 +279,7 @@ export default function AddDogPage() {
                   name="gender"
                   value={formData.gender}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black"
                 >
                   <option value="male">Male</option>
                   <option value="female">Female</option>

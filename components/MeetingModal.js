@@ -211,7 +211,7 @@ export default function MeetingModal({ isOpen, onClose, recipient, conversation,
                 value={formData.title}
                 onChange={handleInputChange}
                 placeholder="e.g., Dog Walking Meetup"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black"
                 required
               />
             </div>
@@ -239,7 +239,7 @@ export default function MeetingModal({ isOpen, onClose, recipient, conversation,
                   name="start_time"
                   value={formData.start_time}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black"
                   required
                 />
               </div>
@@ -269,7 +269,7 @@ export default function MeetingModal({ isOpen, onClose, recipient, conversation,
                   name="end_time"
                   value={formData.end_time}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black"
                   required
                 />
               </div>
@@ -287,7 +287,7 @@ export default function MeetingModal({ isOpen, onClose, recipient, conversation,
                 value={formData.meeting_place}
                 onChange={handleInputChange}
                 placeholder="e.g., Central Park, 123 Main St, etc."
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black"
                 required
               />
             </div>
@@ -304,7 +304,7 @@ export default function MeetingModal({ isOpen, onClose, recipient, conversation,
                 onChange={handleInputChange}
                 placeholder="Any additional details about the meeting..."
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black"
               />
             </div>
 

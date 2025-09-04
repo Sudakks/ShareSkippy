@@ -21,7 +21,7 @@ A comprehensive review system has been implemented for meetings between users. U
   - `app/api/reviews/pending/route.js` (GET)
   - `app/api/reviews/stats/route.js` (GET)
 - **Features**:
-  - Create reviews for completed meetings (24+ hours after end)
+  - Create reviews for completed meetings (immediately after end)
   - Fetch reviews for specific users or all reviews
   - Update/delete own reviews
   - Get pending reviews for current user
@@ -62,7 +62,7 @@ The system automatically marks meetings as "completed" when their end time passe
 
 ### 3. Review Flow
 1. Meeting occurs and status changes to "completed"
-2. After 24 hours, users can leave reviews
+2. Immediately after meeting ends, users can leave reviews
 3. Banner notification appears when users open the app
 4. Users can click to leave reviews via modal
 5. Reviews are displayed publicly on profiles
@@ -71,7 +71,7 @@ The system automatically marks meetings as "completed" when their end time passe
 
 ### Review Requirements
 - Only completed meetings can be reviewed
-- 24-hour delay after meeting end before review is allowed
+- Reviews can be left immediately after meeting ends
 - 1-5 star rating required
 - Comment with minimum 5 words required
 - One review per user per meeting

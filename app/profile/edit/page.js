@@ -350,7 +350,7 @@ export default function ProfileEditPage() {
                   onChange={handleInputChange}
                   required
                   placeholder="First Name"
-                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                 />
               </div>
               <div>
@@ -364,7 +364,7 @@ export default function ProfileEditPage() {
                   onChange={handleInputChange}
                   required
                   placeholder="Last Name"
-                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                 />
               </div>
             </div>
@@ -427,7 +427,7 @@ export default function ProfileEditPage() {
                   onChange={handleInputChange}
                   required
                   placeholder="Name"
-                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                 />
                 <input
                   type="tel"
@@ -436,7 +436,7 @@ export default function ProfileEditPage() {
                   onChange={handleInputChange}
                   required
                   placeholder="Phone Number"
-                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                 />
                 <input
                   type="email"
@@ -444,7 +444,7 @@ export default function ProfileEditPage() {
                   value={profile.emergency_contact_email}
                   onChange={handleInputChange}
                   placeholder="Email (optional)"
-                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                 />
               </div>
             </div>
@@ -505,7 +505,7 @@ export default function ProfileEditPage() {
                     onChange={handleInputChange}
                     placeholder="Please describe (up to 10 words)"
                     maxLength={100}
-                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                   />
                 </div>
               )}
@@ -626,7 +626,7 @@ export default function ProfileEditPage() {
                   value={profile.street_address}
                   onChange={handleInputChange}
                   placeholder="123 Main Street"
-                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                 />
               </div>
               
@@ -640,7 +640,7 @@ export default function ProfileEditPage() {
                   value={profile.city}
                   onChange={handleInputChange}
                   placeholder="Berkeley"
-                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                 />
               </div>
               
@@ -654,7 +654,7 @@ export default function ProfileEditPage() {
                   value={profile.state}
                   onChange={handleInputChange}
                   placeholder="CA"
-                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                 />
               </div>
               
@@ -668,7 +668,7 @@ export default function ProfileEditPage() {
                   value={profile.zip_code}
                   onChange={handleInputChange}
                   placeholder="94704"
-                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                 />
               </div>
               

@@ -122,7 +122,7 @@ export default function CommunitySupportSection({
                       value={formData.help_reason_other_text}
                       onChange={handleInputChange}
                       placeholder="Please describe your situation..."
-                      className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full p-3 border border-gray-300 rounded-lg bg-white text-black focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       maxLength={100}
                     />
                   </div>

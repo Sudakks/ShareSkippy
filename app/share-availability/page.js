@@ -711,7 +711,7 @@ export default function ShareAvailability() {
                   required
                   value={formData.title}
                   onChange={(e) => handleInputChange('title', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder={postType === 'dog_available' ? 'e.g., Need dog walking help this week' : 'e.g., Available for dog walking'}
                 />
               </div>
@@ -848,7 +848,7 @@ export default function ShareAvailability() {
                     value={formData.urgency_notes}
                     onChange={(e) => handleInputChange('urgency_notes', e.target.value)}
                     rows={2}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Explain why this is urgent..."
                   />
                 </div>
@@ -932,7 +932,7 @@ export default function ShareAvailability() {
                         type="text"
                         value={formData.custom_location_address}
                         onChange={(e) => handleInputChange('custom_location_address', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="123 Main St"
                       />
                     </div>
@@ -945,7 +945,7 @@ export default function ShareAvailability() {
                         type="text"
                         value={formData.custom_location_city}
                         onChange={(e) => handleInputChange('custom_location_city', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="City"
                       />
                     </div>
@@ -958,7 +958,7 @@ export default function ShareAvailability() {
                         type="text"
                         value={formData.custom_location_state}
                         onChange={(e) => handleInputChange('custom_location_state', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="State"
                       />
                     </div>
@@ -971,7 +971,7 @@ export default function ShareAvailability() {
                         type="text"
                         value={formData.custom_location_zip_code}
                         onChange={(e) => handleInputChange('custom_location_zip_code', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="12345"
                       />
                     </div>
@@ -1028,7 +1028,7 @@ export default function ShareAvailability() {
                   type="text"
                   value={formData.preferred_meeting_location}
                   onChange={(e) => handleInputChange('preferred_meeting_location', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="e.g., Local park, my home, etc."
                 />
               </div>
