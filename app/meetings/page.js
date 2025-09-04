@@ -1,17 +1,308 @@
+"use client";
+import { useState, useEffect } from 'react';
+import { useSupabaseAuth } from '@/libs/supabase/hooks';
+
 export default function MeetingsPage() {
-  return (
-    <div className="container mx-auto px-8 py-12">
-      <h1 className="text-3xl font-bold mb-6">Meetings</h1>
-      <p className="text-lg text-gray-600 mb-8">
-        Schedule and manage dog walking meetups and community events.
-      </p>
+  const { user, loading: authLoading } = useSupabaseAuth();
+  const [meetings, setMeetings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(null);
+
+  useEffect(() => {
+    if (user && !authLoading) {
+      fetchMeetings();
+    }
+  }, [user, authLoading]);
+
+  const fetchMeetings = async () => {
+    if (!user) return;
+
+    try {
+      setLoading(true);
       
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-semibold mb-4">Coming Soon</h2>
-        <p className="text-gray-600">
-          The meetings feature is currently under development. You&apos;ll be able to schedule 
-          dog walking meetups and join community events with other dog lovers.
-        </p>
+      // First, update any meetings that should be marked as completed
+      await fetch('/api/meetings/update-status', { method: 'POST' });
+      
+      // Then fetch the updated meetings
+      const response = await fetch('/api/meetings');
+      const data = await response.json();
+      
+      if (response.ok) {
+        setMeetings(data.meetings || []);
+      } else {
+        console.error('Error fetching meetings:', data.error);
+      }
+    } catch (error) {
+      console.error('Error fetching meetings:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateMeetingStatus = async (meetingId, status, message) => {
+    try {
+      setActionLoading(meetingId);
+      
+      const response = await fetch(`/api/meetings/${meetingId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status, message }),
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        // Update the meeting in the local state
+        setMeetings(prev => prev.map(meeting => 
+          meeting.id === meetingId ? { ...meeting, status: data.meeting.status } : meeting
+        ));
+      } else {
+        console.error('Error updating meeting:', data.error);
+        alert(data.error || 'Failed to update meeting');
+      }
+    } catch (error) {
+      console.error('Error updating meeting:', error);
+      alert('Failed to update meeting');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const cancelMeeting = async (meetingId) => {
+    if (!confirm('Are you sure you want to cancel this meeting?')) return;
+    
+    try {
+      setActionLoading(meetingId);
+      
+      const response = await fetch(`/api/meetings/${meetingId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          status: 'cancelled',
+          message: 'This meeting has been cancelled.'
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        setMeetings(prev => prev.map(meeting => 
+          meeting.id === meetingId ? { ...meeting, status: data.meeting.status } : meeting
+        ));
+      } else {
+        console.error('Error cancelling meeting:', data.error);
+        alert(data.error || 'Failed to cancel meeting');
+      }
+    } catch (error) {
+      console.error('Error cancelling meeting:', error);
+      alert('Failed to cancel meeting');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      case 'accepted': return 'bg-blue-100 text-blue-800';
+      case 'rejected': return 'bg-red-100 text-red-800';
+      case 'scheduled': return 'bg-green-100 text-green-800';
+      case 'cancelled': return 'bg-gray-100 text-gray-800';
+      case 'completed': return 'bg-purple-100 text-purple-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const formatDateTime = (dateString) => {
+    const date = new Date(dateString);
+    return {
+      date: date.toLocaleDateString('en-US', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      }),
+      time: date.toLocaleTimeString('en-US', { 
+        hour: 'numeric', 
+        minute: '2-digit',
+        hour12: true 
+      })
+    };
+  };
+
+  const canCancel = (meeting) => {
+    return meeting.status === 'scheduled' && new Date(meeting.start_datetime) > new Date();
+  };
+
+  const canAcceptReject = (meeting) => {
+    return meeting.status === 'pending' && meeting.recipient_id === user?.id;
+  };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Please sign in</h1>
+          <p className="text-gray-600">You need to be signed in to view meetings.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-6xl mx-auto py-8 px-4">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            📅 Meetings
+          </h1>
+          <p className="text-gray-600">Schedule and manage dog walking meetups with other community members</p>
+        </div>
+
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
+        ) : meetings.length === 0 ? (
+          <div className="bg-white rounded-lg shadow-md p-8 text-center">
+            <div className="text-6xl mb-4">📅</div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">No meetings yet</h2>
+            <p className="text-gray-600 mb-4">
+              Start a conversation with someone in the community and schedule your first meeting!
+            </p>
+            <a 
+              href="/messages" 
+              className="inline-block px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              Go to Messages
+            </a>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {meetings.map((meeting) => {
+              const isRequester = meeting.requester_id === user.id;
+              const otherPerson = isRequester ? meeting.recipient : meeting.requester;
+              const startDateTime = formatDateTime(meeting.start_datetime);
+              const endDateTime = formatDateTime(meeting.end_datetime);
+
+              return (
+                <div key={meeting.id} className="bg-white rounded-lg shadow-md p-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      {/* Meeting Header */}
+                      <div className="flex items-center space-x-3 mb-4">
+                        {otherPerson.profile_photo_url ? (
+                          <img
+                            src={otherPerson.profile_photo_url}
+                            alt={`${otherPerson.first_name} ${otherPerson.last_name}`}
+                            className="w-12 h-12 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center text-lg font-medium text-gray-600">
+                            {otherPerson.first_name?.[0] || '👤'}
+                          </div>
+                        )}
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-900">
+                            {meeting.title}
+                          </h3>
+                          <p className="text-sm text-gray-500">
+                            {isRequester ? 'Meeting with' : 'Meeting from'} {otherPerson.first_name} {otherPerson.last_name}
+                          </p>
+                        </div>
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(meeting.status)}`}>
+                          {meeting.status.charAt(0).toUpperCase() + meeting.status.slice(1)}
+                        </span>
+                      </div>
+
+                      {/* Meeting Details */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                          <h4 className="font-medium text-gray-900 mb-1">Date & Time</h4>
+                          <p className="text-sm text-gray-600">
+                            {startDateTime.date}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            {startDateTime.time} - {endDateTime.time}
+                          </p>
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-gray-900 mb-1">Location</h4>
+                          <p className="text-sm text-gray-600">{meeting.meeting_place}</p>
+                        </div>
+                      </div>
+
+                      {meeting.description && (
+                        <div className="mb-4">
+                          <h4 className="font-medium text-gray-900 mb-1">Details</h4>
+                          <p className="text-sm text-gray-600">{meeting.description}</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex flex-col space-y-2 ml-4">
+                      {canAcceptReject(meeting) && (
+                        <>
+                          <button
+                            onClick={() => updateMeetingStatus(meeting.id, 'accepted', 'I have accepted your meeting request!')}
+                            disabled={actionLoading === meeting.id}
+                            className="px-4 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 transition-colors disabled:opacity-50"
+                          >
+                            {actionLoading === meeting.id ? 'Processing...' : 'Accept'}
+                          </button>
+                          <button
+                            onClick={() => updateMeetingStatus(meeting.id, 'rejected', 'I have declined your meeting request.')}
+                            disabled={actionLoading === meeting.id}
+                            className="px-4 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 transition-colors disabled:opacity-50"
+                          >
+                            {actionLoading === meeting.id ? 'Processing...' : 'Reject'}
+                          </button>
+                        </>
+                      )}
+                      
+                      {meeting.status === 'accepted' && isRequester && (
+                        <button
+                          onClick={() => updateMeetingStatus(meeting.id, 'scheduled', 'Meeting confirmed! Looking forward to seeing you.')}
+                          disabled={actionLoading === meeting.id}
+                          className="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
+                        >
+                          {actionLoading === meeting.id ? 'Processing...' : 'Confirm Meeting'}
+                        </button>
+                      )}
+
+                      {canCancel(meeting) && (
+                        <button
+                          onClick={() => cancelMeeting(meeting.id)}
+                          disabled={actionLoading === meeting.id}
+                          className="px-4 py-2 bg-gray-600 text-white text-sm rounded-md hover:bg-gray-700 transition-colors disabled:opacity-50"
+                        >
+                          {actionLoading === meeting.id ? 'Processing...' : 'Cancel'}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useSupabaseAuth } from '@/libs/supabase/hooks';
 import { supabase } from '@/libs/supabase';
 import MessageModal from '@/components/MessageModal';
+import MeetingModal from '@/components/MeetingModal';
 
 export default function MessagesPage() {
   const { user, loading: authLoading } = useSupabaseAuth();
@@ -13,6 +14,7 @@ export default function MessagesPage() {
   const [sending, setSending] = useState(false);
   const [newMessage, setNewMessage] = useState('');
   const [messageModal, setMessageModal] = useState({ isOpen: false, recipient: null, availabilityPost: null });
+  const [meetingModal, setMeetingModal] = useState({ isOpen: false, recipient: null, conversation: null });
 
   useEffect(() => {
     if (user && !authLoading) {
@@ -154,6 +156,27 @@ export default function MessagesPage() {
     setMessageModal({ isOpen: false, recipient: null, availabilityPost: null });
   };
 
+  const openMeetingModal = () => {
+    if (selectedConversation) {
+      setMeetingModal({ 
+        isOpen: true, 
+        recipient: selectedConversation.otherParticipant, 
+        conversation: selectedConversation 
+      });
+    }
+  };
+
+  const closeMeetingModal = () => {
+    setMeetingModal({ isOpen: false, recipient: null, conversation: null });
+  };
+
+  const handleMeetingCreated = async () => {
+    if (selectedConversation) {
+      await fetchMessages(selectedConversation.id);
+      await fetchConversations();
+    }
+  };
+
   const formatTime = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleTimeString('en-US', {
@@ -166,12 +189,22 @@ export default function MessagesPage() {
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
-    const diffTime = Math.abs(now - date);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 1) return 'Yesterday';
-    if (diffDays < 7) return date.toLocaleDateString('en-US', { weekday: 'long' });
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    
+    // Reset time to start of day for accurate date comparison
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const messageDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    if (messageDate.getTime() === today.getTime()) {
+      return 'Today';
+    } else if (messageDate.getTime() === yesterday.getTime()) {
+      return 'Yesterday';
+    } else if (now.getTime() - messageDate.getTime() < 7 * 24 * 60 * 60 * 1000) {
+      return date.toLocaleDateString('en-US', { weekday: 'long' });
+    } else {
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
   };
 
   if (authLoading) {
@@ -292,8 +325,16 @@ export default function MessagesPage() {
                           </p>
                         </div>
                       </div>
-                      <div className="text-sm text-gray-500">
-                        {selectedConversation.availability?.title}
+                      <div className="flex items-center space-x-3">
+                        <div className="text-sm text-gray-500">
+                          {selectedConversation.availability?.title}
+                        </div>
+                        <button
+                          onClick={openMeetingModal}
+                          className="px-3 py-1.5 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 transition-colors"
+                        >
+                          📅 Schedule Meeting
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -363,6 +404,15 @@ export default function MessagesPage() {
           onClose={closeMessageModal}
           recipient={messageModal.recipient}
           availabilityPost={messageModal.availabilityPost}
+        />
+
+        {/* Meeting Modal */}
+        <MeetingModal
+          isOpen={meetingModal.isOpen}
+          onClose={closeMeetingModal}
+          recipient={meetingModal.recipient}
+          conversation={meetingModal.conversation}
+          onMeetingCreated={handleMeetingCreated}
         />
       </div>
     </div>
