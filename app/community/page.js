@@ -362,29 +362,29 @@ export default function CommunityPage() {
   };
 
   const deletePost = async (postId) => {
-    if (!user || !confirm('Are you sure you want to delete this post? This action cannot be undone.')) return;
+    if (!user || !confirm('Are you sure you want to hide this post? It will no longer be visible to other users, but existing conversations will be preserved.')) return;
 
     try {
       setDeletingPost(postId);
       const supabase = createClient();
       const { error } = await supabase
         .from('availability')
-        .delete()
+        .update({ status: 'inactive' })
         .eq('id', postId)
         .eq('owner_id', user.id);
 
       if (error) {
-        console.error('Error deleting post:', error);
-        alert('Failed to delete post: ' + (error.message || 'Unknown error'));
+        console.error('Error hiding post:', error);
+        alert('Failed to hide post: ' + (error.message || 'Unknown error'));
         return;
       }
 
       // Remove from local state
       setMyAvailabilityPosts(myAvailabilityPosts.filter(post => post.id !== postId));
-      alert('Post deleted successfully');
+      alert('Post hidden successfully');
     } catch (error) {
-      console.error('Error deleting post:', error);
-      alert('Failed to delete post: ' + (error.message || 'Unknown error'));
+      console.error('Error hiding post:', error);
+      alert('Failed to hide post: ' + (error.message || 'Unknown error'));
     } finally {
       setDeletingPost(null);
     }
@@ -936,7 +936,7 @@ export default function CommunityPage() {
                             className={`bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 transition-colors ${deletingPost === post.id ? 'opacity-50 cursor-not-allowed' : ''}`}
                             disabled={deletingPost === post.id}
                           >
-                            {deletingPost === post.id ? 'Deleting...' : 'Delete'}
+                            {deletingPost === post.id ? 'Hiding...' : 'Hide Post'}
                           </button>
                         </div>
                       </div>

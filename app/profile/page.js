@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import DeleteAccountModal from '../../components/DeleteAccountModal';
 import UserReviews from '../../components/UserReviews';
+import DeletionRequestStatus from '../../components/DeletionRequestStatus';
 import { createClient } from '@/libs/supabase/client';
 import { formatLocation } from '@/libs/utils';
 
@@ -111,6 +112,9 @@ export default function ProfilePage() {
           </button>
         </div>
       </div>
+
+      {/* Deletion Request Status */}
+      <DeletionRequestStatus userId={profile.id} />
 
       <div className="space-y-3">
         <div className="bg-gray-50 p-3 rounded">

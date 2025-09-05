@@ -23,7 +23,10 @@ export default function AvailabilityDetailPage() {
     try {
       const supabase = createClient();
       
-      const { data, error } = await supabase
+      // First, get the current user to check if they're the owner
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      let query = supabase
         .from('availability')
         .select(`
           *,
@@ -70,8 +73,27 @@ export default function AvailabilityDetailPage() {
             description
           )
         `)
-        .eq('id', params.id)
-        .single();
+        .eq('id', params.id);
+      
+      // If user is not the owner, only show active posts
+      if (!user) {
+        query = query.eq('status', 'active');
+      } else {
+        // Check if user is the owner first
+        const { data: postData, error: postError } = await supabase
+          .from('availability')
+          .select('owner_id, status')
+          .eq('id', params.id)
+          .single();
+        
+        if (postData && postData.owner_id !== user.id) {
+          // User is not the owner, only show active posts
+          query = query.eq('status', 'active');
+        }
+        // If user is the owner, show the post regardless of status
+      }
+      
+      const { data, error } = await query.single();
 
       if (data && !error) {
         // Fetch additional dogs if this post has multiple dogs
@@ -91,7 +113,12 @@ export default function AvailabilityDetailPage() {
 
       if (error) {
         console.error('Error fetching availability:', error);
-        setError('Failed to load availability details');
+        // Check if the error is because the post is inactive
+        if (error.code === 'PGRST116' || !data) {
+          setError('This availability post is no longer active or has been removed.');
+        } else {
+          setError('Failed to load availability details');
+        }
         return;
       }
 

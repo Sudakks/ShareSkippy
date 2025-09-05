@@ -25,7 +25,7 @@ export interface AvailabilityPost {
   can_pick_up?: boolean;
   can_drop_off?: boolean;
   preferred_meeting_location?: string;
-  status: 'active' | 'inactive' | 'completed';
+  status: 'active' | 'inactive' | 'completed' | 'cancelled';
   community_support_enabled?: boolean;
   support_preferences?: string[];
   flexible_scheduling_needed?: boolean;
