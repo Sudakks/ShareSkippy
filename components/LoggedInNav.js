@@ -53,7 +53,7 @@ const LoggedInNav = () => {
   };
 
   return (
-    <header className="bg-base-200">
+    <header className="bg-indigo-600 text-white">
       <nav
         className="container flex items-center justify-between px-8 py-4 mx-auto"
         aria-label="Global"
@@ -74,7 +74,7 @@ const LoggedInNav = () => {
               width={32}
               height={32}
             />
-            <span className="font-extrabold text-lg">{config.appName}</span>
+            <span className="font-extrabold text-lg text-white">{config.appName}</span>
           </Link>
         </div>
 
@@ -109,8 +109,8 @@ const LoggedInNav = () => {
             <Link
               href={item.href}
               key={item.href}
-              className={`link link-hover px-3 py-2 rounded-lg transition-colors ${
-                pathname === item.href ? "bg-primary text-primary-content" : ""
+              className={`px-3 py-2 rounded-lg transition-colors text-white hover:text-indigo-100 ${
+                pathname === item.href ? "bg-white/20 text-white" : ""
               }`}
               title={item.label}
             >
@@ -123,7 +123,7 @@ const LoggedInNav = () => {
         <div className="hidden lg:flex lg:justify-end lg:flex-1">
           <button
             onClick={handleSignOut}
-            className="btn btn-outline btn-sm"
+            className="btn btn-outline btn-sm text-white border-white hover:bg-white hover:text-indigo-600"
           >
             Sign out
           </button>
@@ -133,7 +133,7 @@ const LoggedInNav = () => {
       {/* Mobile menu */}
       <div className={`relative z-50 ${isOpen ? "" : "hidden"}`}>
         <div
-          className={`fixed inset-y-0 right-0 z-10 w-full px-8 py-4 overflow-y-auto bg-base-200 sm:max-w-sm sm:ring-1 sm:ring-neutral/10 transform origin-right transition ease-in-out duration-300`}
+          className={`fixed inset-y-0 right-0 z-10 w-full px-8 py-4 overflow-y-auto bg-indigo-600 sm:max-w-sm sm:ring-1 sm:ring-neutral/10 transform origin-right transition ease-in-out duration-300`}
         >
           {/* Logo on small screens */}
           <div className="flex items-center justify-between">
@@ -151,7 +151,7 @@ const LoggedInNav = () => {
                 width={32}
                 height={32}
               />
-              <span className="font-extrabold text-lg">{config.appName}</span>
+              <span className="font-extrabold text-lg text-white">{config.appName}</span>
             </Link>
             <button
               type="button"
@@ -184,8 +184,8 @@ const LoggedInNav = () => {
                   <Link
                     href={item.href}
                     key={item.href}
-                    className={`link link-hover w-full px-3 py-2 rounded-lg transition-colors ${
-                      pathname === item.href ? "bg-primary text-primary-content" : ""
+                    className={`w-full px-3 py-2 rounded-lg transition-colors text-white hover:text-indigo-100 ${
+                      pathname === item.href ? "bg-white/20 text-white" : ""
                     }`}
                     title={item.label}
                   >
@@ -199,7 +199,7 @@ const LoggedInNav = () => {
             <div className="flex flex-col">
               <button
                 onClick={handleSignOut}
-                className="btn btn-outline btn-sm w-full"
+                className="btn btn-outline btn-sm w-full text-white border-white hover:bg-white hover:text-indigo-600"
               >
                 Sign out
               </button>

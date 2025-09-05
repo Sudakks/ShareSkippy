@@ -8,16 +8,7 @@ import ButtonSignin from "./ButtonSignin";
 import logo from "@/app/icon.png";
 import config from "@/config";
 
-const links = [
-  {
-    href: "/#testimonials",
-    label: "Reviews",
-  },
-  {
-    href: "/faq",
-    label: "FAQ",
-  },
-];
+const links = [];
 
 const cta = <ButtonSignin extraStyle="btn-primary" />;
 
@@ -30,7 +21,7 @@ const Header = () => {
   }, [searchParams]);
 
   return (
-    <header className="bg-gradient-to-r from-sky-600 to-blue-700 text-white">
+    <header className="bg-indigo-600 text-white">
       <nav
         className="container flex items-center justify-between px-8 py-4 mx-auto"
         aria-label="Global"
@@ -88,7 +79,7 @@ const Header = () => {
             <Link
               href={link.href}
               key={link.href}
-              className="hover:text-sky-100 transition"
+              className="hover:text-indigo-100 transition"
               title={link.label}
             >
               {link.label}
@@ -104,7 +95,7 @@ const Header = () => {
       <div className={`relative z-50 ${isOpen ? "" : "hidden"}`}>
         <div
           className={`fixed inset-y-0 right-0 z-10 w-full px-8 py-4 overflow-y-auto 
-          bg-gradient-to-br from-sky-600 to-blue-700 sm:max-w-sm sm:ring-1 sm:ring-white/10 
+          bg-indigo-600 sm:max-w-sm sm:ring-1 sm:ring-white/10 
           transform origin-right transition ease-in-out duration-300`}
         >
           {/* Logo (mobile) */}
@@ -153,12 +144,12 @@ const Header = () => {
           {/* Links (mobile) */}
           <div className="flow-root mt-6">
             <div className="py-4">
-              <div className="flex flex-col gap-y-4 items-start">
+              <div className="flex flex-col gap-y-2 items-start">
                 {links.map((link) => (
                   <Link
                     href={link.href}
                     key={link.href}
-                    className="hover:text-sky-100 transition"
+                    className="hover:text-indigo-100 hover:bg-indigo-700/50 rounded px-2 py-1 transition w-full"
                     title={link.label}
                   >
                     {link.label}
