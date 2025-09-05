@@ -100,11 +100,67 @@ export async function POST(request) {
       return NextResponse.json({ error: 'You can only review meetings that have ended' }, { status: 400 });
     }
 
-    // Determine reviewee (the other participant) and roles
+    // Get the availability post to determine post type and roles
+    const { data: availability, error: availabilityError } = await supabase
+      .from('availability')
+      .select('post_type, owner_id')
+      .eq('id', meeting.availability_id)
+      .single();
+
+    if (availabilityError) throw availabilityError;
+
+    // Determine reviewee (the other participant) and roles based on post type
     const isRequester = meeting.requester_id === user.id;
     const revieweeId = isRequester ? meeting.recipient_id : meeting.requester_id;
-    const reviewerRole = isRequester ? 'requester' : 'recipient';
-    const reviewedRole = isRequester ? 'recipient' : 'requester';
+    
+    // Determine roles based on post type and who posted it
+    let reviewerRole, reviewedRole;
+    
+    if (availability.post_type === 'dog_available') {
+      // For dog_available posts: poster is owner, other person is walker
+      if (isRequester) {
+        // User is requester, check if they are the poster (owner)
+        if (meeting.requester_id === availability.owner_id) {
+          reviewerRole = 'owner';
+          reviewedRole = 'walker';
+        } else {
+          reviewerRole = 'walker';
+          reviewedRole = 'owner';
+        }
+      } else {
+        // User is recipient, check if they are the poster (owner)
+        if (meeting.recipient_id === availability.owner_id) {
+          reviewerRole = 'owner';
+          reviewedRole = 'walker';
+        } else {
+          reviewerRole = 'walker';
+          reviewedRole = 'owner';
+        }
+      }
+    } else if (availability.post_type === 'petpal_available') {
+      // For petpal_available posts: poster is walker, other person is owner
+      if (isRequester) {
+        // User is requester, check if they are the poster (walker)
+        if (meeting.requester_id === availability.owner_id) {
+          reviewerRole = 'walker';
+          reviewedRole = 'owner';
+        } else {
+          reviewerRole = 'owner';
+          reviewedRole = 'walker';
+        }
+      } else {
+        // User is recipient, check if they are the poster (walker)
+        if (meeting.recipient_id === availability.owner_id) {
+          reviewerRole = 'walker';
+          reviewedRole = 'owner';
+        } else {
+          reviewerRole = 'owner';
+          reviewedRole = 'walker';
+        }
+      }
+    } else {
+      return NextResponse.json({ error: 'Invalid post type for review' }, { status: 400 });
+    }
 
     // Debug logging
     console.log('Review submission debug:', {
@@ -112,6 +168,8 @@ export async function POST(request) {
       userId: user.id,
       meetingRequesterId: meeting.requester_id,
       meetingRecipientId: meeting.recipient_id,
+      availabilityPostType: availability.post_type,
+      availabilityOwnerId: availability.owner_id,
       isRequester,
       revieweeId,
       reviewerRole,
@@ -119,10 +177,10 @@ export async function POST(request) {
     });
 
     // Validate roles
-    if (!['requester', 'recipient'].includes(reviewerRole)) {
+    if (!['owner', 'walker'].includes(reviewerRole)) {
       return NextResponse.json({ error: `Invalid reviewer role: ${reviewerRole}` }, { status: 400 });
     }
-    if (!['requester', 'recipient'].includes(reviewedRole)) {
+    if (!['owner', 'walker'].includes(reviewedRole)) {
       return NextResponse.json({ error: `Invalid reviewed role: ${reviewedRole}` }, { status: 400 });
     }
 
