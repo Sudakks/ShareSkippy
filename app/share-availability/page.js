@@ -500,11 +500,11 @@ export default function ShareAvailability() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto py-4 sm:py-8 px-3 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Share Availability</h1>
-          <p className="text-gray-600">Let your community know when you&apos;re available to help or need assistance</p>
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Share Availability</h1>
+          <p className="text-sm sm:text-base text-gray-600">Let your community know when you&apos;re available to help or need assistance</p>
         </div>
 
         {/* Progress Steps */}
@@ -542,7 +542,7 @@ export default function ShareAvailability() {
 
         {/* Step 1: Choose Type */}
         {currentStep === 1 && (
-          <div className="bg-white rounded-lg shadow-md p-8">
+          <div className="bg-white rounded-lg shadow-md p-4 sm:p-8">
             <h2 className="text-2xl font-semibold mb-6">What are you sharing availability for?</h2>
             
             <div className="grid md:grid-cols-2 gap-6">
@@ -592,15 +592,15 @@ export default function ShareAvailability() {
 
         {/* Step 2: Form Details */}
         {currentStep === 2 && (
-          <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-8">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-semibold">
+          <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-4 sm:p-8">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0 mb-6">
+              <h2 className="text-xl sm:text-2xl font-semibold">
                 {postType === 'dog_available' ? 'Dog Availability Details' : 'Pet Sitter Availability Details'}
               </h2>
               <button
                 type="button"
                 onClick={() => setCurrentStep(1)}
-                className="text-blue-600 hover:text-blue-800 font-medium"
+                className="text-blue-600 hover:text-blue-800 font-medium text-sm sm:text-base self-start sm:self-auto"
               >
                 ← Back
               </button>
@@ -671,21 +671,24 @@ export default function ShareAvailability() {
               </p>
               
               {/* Day Selection */}
-              <div className="grid grid-cols-7 gap-2 mb-6">
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 mb-6">
                 {days.map(({ key, label }) => (
                   <button
                     key={key}
                     type="button"
                     onClick={() => toggleDay(key)}
-                    className={`p-3 rounded-lg border-2 transition-all ${
+                    className={`p-2 sm:p-3 rounded-lg border-2 transition-all text-center ${
                       daySchedules[key].enabled
                         ? 'border-blue-500 bg-blue-50 text-blue-700'
                         : 'border-gray-200 hover:border-gray-300 text-gray-600'
                     }`}
                   >
-                    <div className="font-medium">{label}</div>
-                    <div className="text-xs">
+                    <div className="font-medium text-sm sm:text-base">{label}</div>
+                    <div className="text-xs hidden sm:block">
                       {daySchedules[key].enabled ? 'Selected' : 'Click to select'}
+                    </div>
+                    <div className="text-xs sm:hidden">
+                      {daySchedules[key].enabled ? '✓' : '○'}
                     </div>
                   </button>
                 ))}
@@ -709,27 +712,29 @@ export default function ShareAvailability() {
                       
                       <div className="space-y-3">
                         {daySchedules[day].timeSlots.map((slot, index) => (
-                          <div key={index} className="flex items-center space-x-3">
-                            <input
-                              type="time"
-                              value={slot.start}
-                              onChange={(e) => updateTimeSlot(day, index, 'start', e.target.value)}
-                              className="px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              required
-                            />
-                            <span className="text-gray-500">to</span>
-                            <input
-                              type="time"
-                              value={slot.end}
-                              onChange={(e) => updateTimeSlot(day, index, 'end', e.target.value)}
-                              className="px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              required
-                            />
+                          <div key={index} className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+                            <div className="flex items-center space-x-2 w-full sm:w-auto">
+                              <input
+                                type="time"
+                                value={slot.start}
+                                onChange={(e) => updateTimeSlot(day, index, 'start', e.target.value)}
+                                className="px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+                                required
+                              />
+                              <span className="text-gray-500 text-sm sm:text-base">to</span>
+                              <input
+                                type="time"
+                                value={slot.end}
+                                onChange={(e) => updateTimeSlot(day, index, 'end', e.target.value)}
+                                className="px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+                                required
+                              />
+                            </div>
                             {daySchedules[day].timeSlots.length > 1 && (
                               <button
                                 type="button"
                                 onClick={() => removeTimeSlot(day, index)}
-                                className="text-red-600 hover:text-red-800 text-sm"
+                                className="text-red-600 hover:text-red-800 text-sm px-2 py-1 border border-red-300 rounded hover:bg-red-50 transition-colors w-full sm:w-auto"
                               >
                                 Remove
                               </button>
@@ -991,18 +996,18 @@ export default function ShareAvailability() {
             </div>
 
             {/* Submit Button */}
-            <div className="flex justify-end space-x-4">
+            <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4">
               <button
                 type="button"
                 onClick={() => setCurrentStep(1)}
-                className="px-6 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-100 transition-colors"
+                className="px-6 py-2 border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-100 transition-colors text-sm sm:text-base order-2 sm:order-1"
               >
                 Back
               </button>
               <button
                 type="submit"
                 disabled={submitting}
-                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base order-1 sm:order-2"
               >
                 {submitting ? 'Creating...' : 'Share Availability'}
               </button>

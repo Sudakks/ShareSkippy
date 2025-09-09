@@ -400,37 +400,37 @@ export default function CommunityPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <div className="max-w-7xl mx-auto py-8 px-4">
+      <div className="max-w-7xl mx-auto py-4 sm:py-8 px-3 sm:px-4">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
             🏘️ Community
           </h1>
-          <p className="text-gray-600">Connect with fellow dog lovers in your neighborhood</p>
+          <p className="text-sm sm:text-base text-gray-600">Connect with fellow dog lovers in your neighborhood</p>
         </div>
 
 
 
         {/* Tabs */}
-        <div className="mb-8">
-          <div className="flex space-x-1 bg-white rounded-xl p-1 shadow-md border border-gray-200">
+        <div className="mb-6 sm:mb-8">
+          <div className="grid grid-cols-1 sm:flex sm:space-x-1 bg-white rounded-xl p-2 sm:p-1 shadow-md border border-gray-200 gap-2 sm:gap-0">
             {[
-              { id: 'dog-availability', label: 'Dog Availability', icon: '🐕' },
-              { id: 'petpal-availability', label: 'PetPal Availability', icon: '🤝' },
-              { id: 'my-availability', label: 'My Availability', icon: '📅' },
-              { id: 'guidelines', label: 'Guidelines', icon: '📋' }
+              { id: 'dog-availability', label: 'Dog Availability', icon: '🐕', shortLabel: 'Dogs' },
+              { id: 'petpal-availability', label: 'PetPal Availability', icon: '🤝', shortLabel: 'PetPals' },
+              { id: 'my-availability', label: 'My Availability', icon: '📅', shortLabel: 'My Posts' }
             ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
+                className={`w-full sm:flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-200 text-sm sm:text-base ${
                   activeTab === tab.id
                     ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >
                 <span className="mr-2">{tab.icon}</span>
-                {tab.label}
+                <span className="hidden sm:inline">{tab.label}</span>
+                <span className="sm:hidden">{tab.shortLabel}</span>
               </button>
             ))}
           </div>
@@ -439,24 +439,24 @@ export default function CommunityPage() {
         {/* Tab Content */}
         {activeTab === 'dog-availability' && (
           <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-gray-900">Dogs Looking for Pals</h2>
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Dogs Looking for Pals</h2>
               <Link
                 href="/share-availability"
-                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 text-sm sm:text-base w-full sm:w-auto text-center"
               >
                 Share Availability
               </Link>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {dogAvailabilityPosts.map((post) => (
                 <div
                   key={post.id}
-                  className="bg-white rounded-xl p-6 shadow-md border border-gray-200"
+                  className="bg-white rounded-xl p-4 sm:p-6 shadow-md border border-gray-200"
                 >
                   {/* Title */}
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">{post.title}</h3>
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4">{post.title}</h3>
                   
                   {/* Dog Information */}
                   {console.log('Rendering post:', post.id, 'allDogs:', post.allDogs, 'dog_id:', post.dog_id, 'dog_ids:', post.dog_ids)}
@@ -592,10 +592,10 @@ export default function CommunityPage() {
                   )}
                   
                   <div className="mt-4 pt-4 border-t border-gray-100">
-                    <div className="flex space-x-2">
+                    <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                       <Link
                         href={`/community/availability/${post.id}`}
-                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base text-center"
                       >
                         View Details
                       </Link>
@@ -607,12 +607,12 @@ export default function CommunityPage() {
                             console.log('Dog post owner_id:', post.owner_id);
                             openMessageModal(post.owner, post);
                           }}
-                          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base"
                         >
                           Send Message
                         </button>
                       ) : (
-                        <div className="text-xs text-gray-400 px-2 py-1 bg-gray-100 rounded">
+                        <div className="text-xs text-gray-400 px-2 py-1 bg-gray-100 rounded text-center">
                           {!user ? 'Not logged in' : 'Your post'}
                         </div>
                       )}
@@ -624,11 +624,11 @@ export default function CommunityPage() {
               {dogAvailabilityPosts.length === 0 && (
                 <div className="col-span-full text-center py-12">
                   <div className="text-6xl mb-4">🐕</div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">No dogs available right now</h3>
-                  <p className="text-gray-600 mb-4">Be the first to share your dog&apos;s availability!</p>
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No dogs available right now</h3>
+                  <p className="text-sm sm:text-base text-gray-600 mb-4">Be the first to share your dog&apos;s availability!</p>
                   <Link
                     href="/share-availability"
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 text-sm sm:text-base"
                   >
                     Share Availability
                   </Link>
@@ -640,24 +640,24 @@ export default function CommunityPage() {
 
         {activeTab === 'petpal-availability' && (
           <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-gray-900">PetPals Available to Help</h2>
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">PetPals Available to Help</h2>
               <Link
                 href="/share-availability"
-                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 text-sm sm:text-base w-full sm:w-auto text-center"
               >
                 Share Availability
               </Link>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {petpalAvailabilityPosts.map((post) => (
                 <div
                   key={post.id}
-                  className="bg-white rounded-xl p-6 shadow-md border border-gray-200"
+                  className="bg-white rounded-xl p-4 sm:p-6 shadow-md border border-gray-200"
                 >
                   {/* Title */}
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">{post.title}</h3>
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4">{post.title}</h3>
                   
                   {/* PetPal Information */}
                   <div className="flex items-center space-x-3 mb-4">
@@ -735,10 +735,10 @@ export default function CommunityPage() {
                   </div>
                   
                   <div className="mt-4 pt-4 border-t border-gray-100">
-                    <div className="flex space-x-2">
+                    <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                       <Link
                         href={`/community/availability/${post.id}`}
-                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm sm:text-base text-center"
                       >
                         View Details
                       </Link>
@@ -749,7 +749,7 @@ export default function CommunityPage() {
                             console.log('Petpal post owner_id:', post.owner_id);
                             openMessageModal(post.owner, post);
                           }}
-                          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base"
                         >
                           Send Message
                         </button>
@@ -762,11 +762,11 @@ export default function CommunityPage() {
               {petpalAvailabilityPosts.length === 0 && (
                 <div className="col-span-full text-center py-12">
                   <div className="text-6xl mb-4">🤝</div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">No PetPals available right now</h3>
-                  <p className="text-gray-600 mb-4">Be the first to offer your help!</p>
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No PetPals available right now</h3>
+                  <p className="text-sm sm:text-base text-gray-600 mb-4">Be the first to offer your help!</p>
                   <Link
                     href="/share-availability"
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 text-sm sm:text-base"
                   >
                     Share Availability
                   </Link>
@@ -778,26 +778,26 @@ export default function CommunityPage() {
 
         {activeTab === 'my-availability' && (
           <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-gray-900">My Availability Posts</h2>
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">My Availability Posts</h2>
               <Link
                 href="/share-availability"
-                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 text-sm sm:text-base w-full sm:w-auto text-center"
               >
                 Create New Post
               </Link>
             </div>
             
             {myAvailabilityPosts.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {myAvailabilityPosts.map((post) => (
                   <div
                     key={post.id}
-                    className="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-200"
+                    className="bg-white rounded-xl p-4 sm:p-6 shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-200"
                   >
                     {/* Title and Status */}
                     <div className="flex justify-between items-start mb-4">
-                      <h3 className="text-lg font-semibold text-gray-900">{post.title}</h3>
+                      <h3 className="text-base sm:text-lg font-semibold text-gray-900">{post.title}</h3>
                       <div className="flex flex-col items-end">
                         <p className={`text-sm ${post.status === 'active' ? 'text-green-600' : 'text-gray-500'}`}>
                           {post.status === 'active' ? 'Active' : 'Inactive'}
@@ -917,23 +917,23 @@ export default function CommunityPage() {
                     </div>
                     
                     <div className="mt-4 pt-4 border-t border-gray-100">
-                      <div className="flex justify-between items-center">
+                      <div className="flex flex-col space-y-2">
                         <Link
                           href={`/community/availability/${post.id}`}
-                          className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors"
+                          className="bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700 transition-colors text-center"
                         >
                           View Details
                         </Link>
-                        <div className="flex space-x-2">
+                        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                           <Link
                             href={`/community/availability/${post.id}/edit`}
-                            className="bg-gray-600 text-white px-3 py-1 rounded text-sm hover:bg-gray-700 transition-colors"
+                            className="bg-gray-600 text-white px-3 py-2 rounded text-sm hover:bg-gray-700 transition-colors text-center flex-1"
                           >
                             Edit
                           </Link>
                           <button 
                             onClick={() => deletePost(post.id)}
-                            className={`bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 transition-colors ${deletingPost === post.id ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            className={`bg-red-600 text-white px-3 py-2 rounded text-sm hover:bg-red-700 transition-colors flex-1 ${deletingPost === post.id ? 'opacity-50 cursor-not-allowed' : ''}`}
                             disabled={deletingPost === post.id}
                           >
                             {deletingPost === post.id ? 'Hiding...' : 'Hide Post'}
@@ -947,11 +947,11 @@ export default function CommunityPage() {
             ) : (
               <div className="col-span-full text-center py-12">
                 <div className="text-6xl mb-4">📅</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">No availability posts yet</h3>
-                <p className="text-gray-600 mb-4">Start sharing your availability to connect with the community!</p>
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No availability posts yet</h3>
+                <p className="text-sm sm:text-base text-gray-600 mb-4">Start sharing your availability to connect with the community!</p>
                 <Link
                   href="/share-availability"
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 text-sm sm:text-base"
                 >
                   Create Your First Post
                 </Link>
@@ -960,91 +960,6 @@ export default function CommunityPage() {
           </div>
         )}
 
-        {activeTab === 'guidelines' && (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900">Community Guidelines</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200">
-                <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                  <span className="mr-2">🤝</span>
-                  Safety First
-                </h3>
-                <ul className="space-y-2 text-gray-600">
-                  <li>• Always meet in public places first</li>
-                  <li>• Bring your dog&apos;s vaccination records</li>
-                  <li>• Use a secure leash and collar</li>
-                  <li>• Supervise all interactions</li>
-                  <li>• Trust your instincts</li>
-                </ul>
-              </div>
-              
-              <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200">
-                <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                  <span className="mr-2">🐕</span>
-                  Dog Etiquette
-                </h3>
-                <ul className="space-y-2 text-gray-600">
-                  <li>• Keep dogs on leash unless in designated areas</li>
-                  <li>• Clean up after your dog</li>
-                  <li>• Respect other dogs&apos; space</li>
-                  <li>• Monitor your dog&apos;s behavior</li>
-                  <li>• Be mindful of noise levels</li>
-                </ul>
-              </div>
-              
-              <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200">
-                <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                  <span className="mr-2">💬</span>
-                  Communication
-                </h3>
-                <ul className="space-y-2 text-gray-600">
-                  <li>• Be clear about expectations</li>
-                  <li>• Respond to messages promptly</li>
-                  <li>• Be honest about your experience</li>
-                  <li>• Respect others&apos; time</li>
-                  <li>• Report any concerns</li>
-                </ul>
-              </div>
-              
-              <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200">
-                <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                  <span className="mr-2">🏆</span>
-                  Building Trust
-                </h3>
-                <ul className="space-y-2 text-gray-600">
-                  <li>• Start with short meetups</li>
-                  <li>• Build relationships gradually</li>
-                  <li>• Share positive experiences</li>
-                  <li>• Give and receive feedback</li>
-                  <li>• Support new members</li>
-                </ul>
-              </div>
-            </div>
-            
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                <span className="mr-2">🚨</span>
-                Emergency Contacts
-              </h3>
-              <p className="text-gray-600 mb-4">
-                In case of emergency, contact local authorities immediately. For non-emergency concerns, 
-                use our support system to report issues.
-              </p>
-              <div className="flex space-x-4">
-                <button className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
-                  Report Issue
-                </button>
-                <Link
-                  href="/safety"
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Safety Guide
-                </Link>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Message Modal */}
         <MessageModal
