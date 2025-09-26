@@ -1,9 +1,9 @@
-import { createClient } from '@/libs/supabase/server';
+import { createServiceClient } from '@/libs/supabase/server';
 import { sendFollowUpEmail } from '@/libs/emailTemplates';
 
 export async function GET() {
   try {
-    const supabase = createClient();
+    const supabase = createServiceClient();
 
     // Get users who signed up exactly 7 days ago
     const sevenDaysAgo = new Date();

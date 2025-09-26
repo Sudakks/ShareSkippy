@@ -1,9 +1,9 @@
-import { createClient } from '@/libs/supabase/server';
+import { createServiceClient } from '@/libs/supabase/server';
 import { sendMeetingReminder } from '@/libs/emailTemplates';
 
 export async function GET() {
   try {
-    const supabase = createClient();
+    const supabase = createServiceClient();
 
     // Get meetings scheduled for tomorrow
     const tomorrow = new Date();

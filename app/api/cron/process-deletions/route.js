@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/libs/supabase/server';
+import { createServiceClient } from '@/libs/supabase/server';
 
 // POST /api/cron/process-deletions - Automated deletion processing (called by cron job)
 export async function POST(request) {
@@ -17,7 +17,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const supabase = createClient();
+    const supabase = createServiceClient();
     
     // Get deletion requests that are ready for processing (scheduled date has passed)
     const { data: readyDeletions, error: fetchError } = await supabase
