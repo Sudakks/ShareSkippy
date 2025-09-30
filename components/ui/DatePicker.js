@@ -24,7 +24,15 @@ export default function DatePicker({ selectedDate, onDateSelect, minDate, placeh
     if (selectedDate) {
       // Parse the date string safely to avoid timezone issues
       const [year, month, day] = selectedDate.split('-').map(Number);
-      setSelectedDay(new Date(year, month - 1, day));
+      const parsedDate = new Date(year, month - 1, day);
+      
+      console.log('DatePicker Debug - useEffect:');
+      console.log('  selectedDate prop:', selectedDate);
+      console.log('  Parsed components:', { year, month, day });
+      console.log('  Parsed date:', parsedDate);
+      console.log('  Parsed date string:', parsedDate.toString());
+      
+      setSelectedDay(parsedDate);
     }
   }, [selectedDate]);
 
@@ -68,12 +76,25 @@ export default function DatePicker({ selectedDate, onDateSelect, minDate, placeh
     
     if (date < minDateObj) return;
     
+    // Debug logging
+    console.log('DatePicker Debug - handleDateSelect:');
+    console.log('  Original date:', date);
+    console.log('  Date string:', date.toString());
+    console.log('  Date components:', {
+      year: date.getFullYear(),
+      month: date.getMonth(),
+      day: date.getDate()
+    });
+    
     setSelectedDay(date);
     // Use local date formatting to avoid timezone issues
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
-    onDateSelect(`${year}-${month}-${day}`);
+    const dateString = `${year}-${month}-${day}`;
+    
+    console.log('  Formatted date string:', dateString);
+    onDateSelect(dateString);
     setIsOpen(false);
   };
 
@@ -93,7 +114,18 @@ export default function DatePicker({ selectedDate, onDateSelect, minDate, placeh
 
   const isSelected = (date) => {
     if (!date || !selectedDay) return false;
-    return date.toDateString() === selectedDay.toDateString();
+    
+    const isSelectedResult = date.toDateString() === selectedDay.toDateString();
+    
+    // Debug logging for selected dates
+    if (isSelectedResult) {
+      console.log('DatePicker Debug - isSelected:');
+      console.log('  Calendar date:', date, date.toDateString());
+      console.log('  Selected day:', selectedDay, selectedDay.toDateString());
+      console.log('  Match:', isSelectedResult);
+    }
+    
+    return isSelectedResult;
   };
 
   const isDisabled = (date) => {
