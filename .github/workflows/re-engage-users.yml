@@ -1,10 +1,11 @@
 name: Re-engage Inactive Users
 
 on:
-  schedule:
-    # Run every Monday at 10 AM UTC
-    - cron: '0 10 * * 1'
-  workflow_dispatch: # Allow manual trigger
+  # DISABLED: Automated re-engagement emails to prevent spam
+  # schedule:
+  #   # Run every Monday at 10 AM UTC
+  #   - cron: '0 10 * * 1'
+  workflow_dispatch: # Allow manual trigger only
 
 jobs:
   re-engage:

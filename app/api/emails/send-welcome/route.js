@@ -1,4 +1,4 @@
-import { sendWelcomeEmail } from '@/libs/emailTemplates';
+import { sendEmail, scheduleNurtureEmail, recordUserActivity } from '@/libs/email';
 import { createClient } from '@/libs/supabase/server';
 
 export async function POST(request) {
@@ -9,8 +9,9 @@ export async function POST(request) {
       return Response.json({ error: 'User ID is required' }, { status: 400 });
     }
 
-    // Get user data from Supabase
     const supabase = createClient();
+
+    // Get user data
     const { data: user, error: userError } = await supabase
       .from('profiles')
       .select('email, first_name, last_name')
@@ -21,17 +22,30 @@ export async function POST(request) {
       return Response.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Send welcome email
-    await sendWelcomeEmail({
-      to: user.email,
-      userName: user.first_name || 'there',
-      appUrl: process.env.NEXT_PUBLIC_APP_URL || 'shareskippy.com',
-      userId: userId,
+    // Record user login activity
+    await recordUserActivity({
+      userId,
+      event: 'login',
+      metadata: { source: 'welcome_email_trigger' }
     });
+
+    // Send welcome email (idempotent)
+    await sendEmail({
+      userId,
+      to: user.email,
+      emailType: 'welcome',
+      payload: {
+        userName: user.first_name || 'there',
+        appUrl: process.env.NEXT_PUBLIC_APP_URL || 'https://shareskippy.com'
+      }
+    });
+
+    // Schedule nurture email for 3 days later
+    await scheduleNurtureEmail(userId);
 
     return Response.json({ 
       success: true, 
-      message: 'Welcome email sent successfully' 
+      message: 'Welcome email sent and nurture email scheduled' 
     });
 
   } catch (error) {
@@ -42,4 +56,3 @@ export async function POST(request) {
     );
   }
 }
-

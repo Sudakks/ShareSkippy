@@ -153,7 +153,7 @@ export async function POST(request) {
 
     if (meetingError) throw meetingError;
 
-    // Send meeting confirmation emails to both participants
+    // Send meeting confirmation emails and schedule reminders for both participants
     try {
       // Send to requester
       await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/emails/meeting-scheduled`, {
@@ -174,8 +174,31 @@ export async function POST(request) {
           userId: recipient_id
         })
       });
+
+      // Schedule meeting reminders for both participants (1 day before)
+      await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/emails/schedule-meeting-reminder`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          meetingId: meeting.id,
+          meetingTitle: title,
+          startsAt: startDate.toISOString()
+        })
+      });
+
+      await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/emails/schedule-meeting-reminder`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: recipient_id,
+          meetingId: meeting.id,
+          meetingTitle: title,
+          startsAt: startDate.toISOString()
+        })
+      });
     } catch (emailError) {
-      console.error('Error sending meeting confirmation emails:', emailError);
+      console.error('Error sending meeting confirmation emails or scheduling reminders:', emailError);
       // Don't fail the meeting creation if email fails
     }
 

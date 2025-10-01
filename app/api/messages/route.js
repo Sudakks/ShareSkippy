@@ -65,16 +65,17 @@ export async function POST(request) {
 
     if (messageError) throw messageError;
 
-    // Send email notification to recipient
+    // Send email notification to recipient using centralized email system
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/emails/new-message`, {
+      await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/emails/send-new-message`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           recipientId: recipient_id,
           senderId: user.id,
           messagePreview: content.substring(0, 100),
-          messageId: message.id
+          messageId: message.id,
+          threadId: conversationId
         })
       });
     } catch (emailError) {

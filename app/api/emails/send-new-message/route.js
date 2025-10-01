@@ -1,4 +1,4 @@
-import { sendNewMessageNotification } from '@/libs/emailTemplates';
+import { sendEmail } from '@/libs/email';
 import { createClient } from '@/libs/supabase/server';
 
 export async function POST(request) {
@@ -7,13 +7,22 @@ export async function POST(request) {
       recipientId, 
       senderId, 
       messagePreview, 
-      messageId 
+      messageId,
+      threadId 
     } = await request.json();
 
     if (!recipientId || !senderId || !messagePreview) {
       return Response.json({ 
         error: 'Recipient ID, sender ID, and message preview are required' 
       }, { status: 400 });
+    }
+
+    // Don't send email to the sender
+    if (recipientId === senderId) {
+      return Response.json({ 
+        success: true, 
+        message: 'Skipped - sender and recipient are the same' 
+      });
     }
 
     const supabase = createClient();
@@ -40,30 +49,20 @@ export async function POST(request) {
       return Response.json({ error: 'Sender not found' }, { status: 404 });
     }
 
-    // Check if user has email notifications enabled
-    const { data: settings } = await supabase
-      .from('user_settings')
-      .select('email_notifications')
-      .eq('user_id', recipientId)
-      .single();
-
-    if (settings && !settings.email_notifications) {
-      return Response.json({ 
-        success: true, 
-        message: 'Email notifications disabled for user' 
-      });
-    }
-
     // Send new message notification
-    await sendNewMessageNotification({
-      to: recipient.email,
-      recipientName: recipient.first_name || 'there',
-      senderName: `${sender.first_name} ${sender.last_name}`.trim(),
-      senderInitial: (sender.first_name || 'U')[0].toUpperCase(),
-      messagePreview: messagePreview.substring(0, 100) + (messagePreview.length > 100 ? '...' : ''),
-      messageTime: new Date().toLocaleString(),
-      messageUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://shareskippy.com'}/messages/${messageId}`,
+    await sendEmail({
       userId: recipientId,
+      to: recipient.email,
+      emailType: 'new_message',
+      payload: {
+        recipientName: recipient.first_name || 'there',
+        senderName: `${sender.first_name} ${sender.last_name}`.trim(),
+        senderInitial: (sender.first_name || 'U')[0].toUpperCase(),
+        messagePreview: messagePreview.substring(0, 100) + (messagePreview.length > 100 ? '...' : ''),
+        messageTime: new Date().toLocaleString(),
+        messageUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://shareskippy.com'}/messages/${messageId}`,
+        threadId: threadId || messageId
+      }
     });
 
     return Response.json({ 
@@ -79,4 +78,3 @@ export async function POST(request) {
     );
   }
 }
-

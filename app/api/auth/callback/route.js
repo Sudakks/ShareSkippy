@@ -60,8 +60,8 @@ export async function GET(req) {
           if (userCreatedAt > fiveMinutesAgo) {
             console.log('📧 Debug: Attempting to send welcome email...');
             
-            // Send welcome email
-            const emailResponse = await fetch(`${requestUrl.origin}/api/emails/welcome`, {
+            // Send welcome email using new centralized system
+            const emailResponse = await fetch(`${requestUrl.origin}/api/emails/send-welcome`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ userId: data.user.id })

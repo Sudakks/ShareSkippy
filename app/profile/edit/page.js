@@ -107,6 +107,7 @@ export default function ProfileEditPage() {
       } else {
         console.log('No profile data found, using empty defaults');
       }
+
     } catch (err) {
       console.error('Error loading profile:', err);
       toast.error(`Failed to load profile: ${err.message}`);

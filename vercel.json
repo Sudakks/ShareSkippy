@@ -1,22 +1,22 @@
 {
   "crons": [
     {
-      "path": "/api/cron/send-3day-follow-up-emails",
-      "schedule": "0 11 * * *"
+      "path": "/api/cron/process-scheduled-emails",
+      "schedule": "0 9 * * *"
     },
     {
-      "path": "/api/cron/send-email-reminders",
-      "schedule": "0 11 * * *"
+      "path": "/api/cron/process-reengage-emails",
+      "schedule": "0 10 * * *"
     }
   ],
   "functions": {
     "app/api/account/deletion-request/route.js": {
       "maxDuration": 30
     },
-    "app/api/cron/send-3day-follow-up-emails/route.js": {
+    "app/api/cron/process-scheduled-emails/route.js": {
       "maxDuration": 60
     },
-    "app/api/cron/send-email-reminders/route.js": {
+    "app/api/cron/process-reengage-emails/route.js": {
       "maxDuration": 60
     }
   },

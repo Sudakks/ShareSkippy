@@ -1,0 +1,22 @@
+We miss you, {{userName}}! 🐾
+
+It's been a bit since you joined ShareSkippy. The neighborhood has been wagging along without you, but it's not the same.
+
+Here's what's new nearby:
+🐕 More pups and pals have joined
+📅 Fresh playtime availability each week
+💬 Neighbors are looking to connect
+
+Want to jump back in? The easiest way is to share your availability so neighbors know when you're available. That's how the real magic (and tail wags) start.
+
+Share Availability Now: {{appUrl}}/share-availability
+
+No barking — just a friendly tail wag. See you back in the pack soon!
+
+— The ShareSkippy Team
+
+---
+ShareSkippy · San Francisco, CA · United States
+Community: {{appUrl}}/community
+Share availability: {{appUrl}}/share-availability
+Unsubscribe: {{appUrl}}/unsubscribe?email={{userEmail}}
