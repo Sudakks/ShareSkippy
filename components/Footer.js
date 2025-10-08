@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import config from "@/config";
 import logo from "@/app/icon.png";
+import { LEGAL } from "@/lib/legal";
 
 // Footer component matching the ShareSkippy design - updated
 const Footer = () => {
@@ -69,9 +70,14 @@ const Footer = () => {
         {/* Bottom section with divider */}
         <div className="border-t border-white/30 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
-            <p className="text-white">
-              ShareSkippy is a free marketplace platform. Users are responsible for their own safety and interactions.
-            </p>
+            <div className="text-center md:text-left">
+              <p className="text-white mb-2">
+                ShareSkippy is a free marketplace platform. Users are responsible for their own safety and interactions.
+              </p>
+              <p className="text-xs text-white/80">
+                {LEGAL.getCurrentDisclosure()}
+              </p>
+            </div>
             <p className="text-white">
               Made with ❤️ for dog lovers
             </p>

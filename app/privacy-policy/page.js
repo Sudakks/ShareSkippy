@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getSEOTags } from "@/libs/seo";
 import config from "@/config";
+import { LEGAL } from "@/lib/legal";
 
 // CHATGPT PROMPT TO GENERATE YOUR PRIVACY POLICY — replace with your own data 👇
 
@@ -60,6 +61,8 @@ const PrivacyPolicy = () => {
           {`Last Updated: September 8, 2025
 
 Thank you for visiting ShareSkippy ("we," "us," or "our"). This Privacy Policy outlines how we collect, use, and protect your personal and non-personal information when you use our website located at https://shareskippy.com (the "Website").
+
+${LEGAL.getCurrentLongDisclosure()}
 
 By accessing or using the Website, you agree to the terms of this Privacy Policy. If you do not agree with the practices described in this policy, please do not use the Website.
 
@@ -135,11 +138,17 @@ You have the right to:
 
 We may update this Privacy Policy from time to time to reflect changes in our practices or for other operational, legal, or regulatory reasons. Any updates will be posted on this page, and we may notify you via email about significant changes.
 
-9. Contact Information
+9. Data Controller
+
+${LEGAL.dataController}
+Contact: ${LEGAL.contact.legal}
+
+10. Contact Information
 
 If you have any questions, concerns, or requests related to this Privacy Policy, you can contact us at:
 
-Email: support@shareskippy.com
+Legal: ${LEGAL.contact.legal}
+Support: ${LEGAL.contact.support}
 
 For all other inquiries, please visit our Contact Us page on the Website.
 

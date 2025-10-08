@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getSEOTags } from "@/libs/seo";
 import config from "@/config";
+import { LEGAL } from "@/lib/legal";
 
 // CHATGPT PROMPT TO GENERATE YOUR TERMS & SERVICES — replace with your own data 👇
 
@@ -63,7 +64,11 @@ Welcome to ShareSkippy!
 
 These Terms of Service ("Terms") govern your use of the ShareSkippy website at https://shareskippy.com ("Website") and the services provided by ShareSkippy. By using our Website and services, you agree to these Terms.
 
-1. Description of ShareSkippy
+1. Definitions
+
+${LEGAL.termsDefinitions}
+
+2. Description of ShareSkippy
 
 ShareSkippy is a community platform that connects dog owners and dog lovers for playdates, walks, and shared care. Our service facilitates safe and responsible dog interactions within local communities.
 
@@ -106,7 +111,7 @@ We reserve the right to suspend or terminate accounts that violate these Terms o
 
 8. Governing Law
 
-These Terms are governed by the laws of the United States.
+These Terms are governed by the laws of ${LEGAL.contact.jurisdiction}.
 
 9. Updates to the Terms
 
@@ -114,7 +119,13 @@ We may update these Terms from time to time. Users will be notified of any chang
 
 10. Contact Information
 
-For any questions or concerns regarding these Terms of Service, please contact us at support@shareskippy.com.
+For any questions or concerns regarding these Terms of Service, please contact us at:
+
+Legal/Contact:
+ShareVita (for ShareSkippy)
+Email: ${LEGAL.contact.legal}
+Support: ${LEGAL.contact.support}
+Jurisdiction: ${LEGAL.contact.jurisdiction}
 
 Thank you for being part of the ShareSkippy community!`}
         </pre>

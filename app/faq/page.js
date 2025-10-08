@@ -2,12 +2,18 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { LEGAL } from '@/lib/legal';
 
 const faqData = [
   // General Questions
   {
     question: "What is ShareSkippy?",
     answer: "ShareSkippy is a community-driven platform that connects pet owners with local pet lovers. We help neighbors find trusted people to walk their dogs, provide companionship, or give pets new experiences like swimming and hiking adventures.",
+    category: "general"
+  },
+  {
+    question: "Who runs ShareSkippy?",
+    answer: LEGAL.faqDisclosure,
     category: "general"
   },
   {

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LEGAL } from "@/lib/legal";
 
 export default function CommunityGuidelines() {
   return (
@@ -104,6 +105,17 @@ export default function CommunityGuidelines() {
               Safety Guide
             </Link>
           </div>
+        </div>
+
+        {/* Legal Disclosure */}
+        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200 mb-8">
+          <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+            <span className="mr-2">ℹ️</span>
+            About ShareSkippy
+          </h3>
+          <p className="text-gray-600 mb-4">
+            {LEGAL.getCurrentDisclosure()}
+          </p>
         </div>
 
         {/* Additional Resources */}

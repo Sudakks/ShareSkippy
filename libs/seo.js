@@ -1,4 +1,5 @@
 import config from "@/config";
+import { LEGAL } from "@/lib/legal";
 
 // These are all the SEO tags you can add to your pages.
 // It prefills data with default title/description/OG, etc.. and you can cusotmize it for each page.
@@ -77,30 +78,22 @@ export const renderSchemaTags = () => {
       type="application/ld+json"
       dangerouslySetInnerHTML={{
         __html: JSON.stringify({
-          "@context": "http://schema.org",
-          "@type": "SoftwareApplication",
+          "@context": "https://schema.org",
+          "@type": "Organization",
           name: config.appName,
           description: config.appDescription,
           image: `https://${config.domainName}/icon.png`,
           url: `https://${config.domainName}/`,
-          author: {
-            "@type": "Person",
-            name: "Marc Lou",
+          parentOrganization: {
+            "@type": "Organization",
+            name: LEGAL.umbrellaName
           },
-          datePublished: "2023-08-01",
-          applicationCategory: "EducationalApplication",
-          aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: "4.8",
-            ratingCount: "12",
-          },
-          offers: [
-            {
-              "@type": "Offer",
-              price: "9.00",
-              priceCurrency: "USD",
-            },
+          legalName: LEGAL.umbrellaName,
+          sameAs: [
+            // Add ShareVita website when available
           ],
+          datePublished: "2023-08-01",
+          applicationCategory: "CommunityApplication",
         }),
       }}
     ></script>

@@ -1,5 +1,6 @@
 
 import Link from 'next/link';
+import { LEGAL } from '@/lib/legal';
 
 export default function SafetyGuidelines() {
   return (
@@ -152,6 +153,16 @@ export default function SafetyGuidelines() {
                   <p className="text-sm text-gray-700">Block Users</p>
                   <p className="text-sm text-gray-700">General Support</p>
                 </div>
+              </div>
+            </section>
+
+            {/* Legal Disclosure */}
+            <section className="mb-8">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h3 className="text-lg font-semibold text-blue-800 mb-2">About ShareSkippy</h3>
+                <p className="text-blue-700 text-sm mb-3">
+                  {LEGAL.getCurrentDisclosure()}
+                </p>
               </div>
             </section>
 
