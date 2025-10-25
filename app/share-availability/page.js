@@ -15,7 +15,7 @@ export default function ShareAvailability() {
 
   // Use React Query hooks for data fetching
   const { data: userProfile, isLoading: profileLoading } = useUserProfile();
-  const { data: dogs, isLoading: dogsLoading } = useUserDogs();
+  const { data, isLoading: dogsLoading } = useUserDogs();
 
   // Check if Supabase is properly configured
   useEffect(() => {
@@ -455,6 +455,8 @@ export default function ShareAvailability() {
       </div>
     );
   }
+
+  const dogs = data || [];
 
   if (!user) {
     return null; // Will redirect to signin
