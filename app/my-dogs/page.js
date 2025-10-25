@@ -11,7 +11,7 @@ export default function MyDogsPage() {
   const [error, setError] = useState(null);
   const queryClient = useQueryClient();
 
-  const { data, isLoading: loading, error: dogsError } = useUserDogs();
+  const { data, isLoading: loading } = useUserDogs();
 
   // Data is now fetched via React Query hooks
 
