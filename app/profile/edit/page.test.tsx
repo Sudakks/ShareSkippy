@@ -26,6 +26,7 @@ interface DogData {
   id: string;
   name: string;
   breed: string;
+  owner_id: string;
 }
 
 // -----------------------------------------------------------
@@ -40,10 +41,10 @@ jest.mock('next/navigation', () => ({
 
 jest.mock('next/image', () => ({
   // eslint-disable-next-line @next/next/no-img-element
-  Image: (props: React.ComponentProps<'img'>) => <img {...props} alt={props.alt || ''} />,
+  default: (props: React.ComponentProps<'img'>) => <img {...props} alt={props.alt || ''} />,
 }));
 
-// Mock the useReviews hook and ensure proper structure
+// Mock the useReviews hook
 jest.mock('@/hooks/useReviews', () => ({
   useUserReviews: () => ({
     data: {
@@ -104,6 +105,7 @@ const getMockSupabaseClient = (
         })),
       };
     }
+    // Fallback for any other table access
     return { select: jest.fn(() => ({ eq: jest.fn(() => Promise.resolve({ data: [] })) })) };
   }),
   auth: {
@@ -144,12 +146,13 @@ describe('PublicProfilePage', () => {
     jest.clearAllMocks();
     (useParams as jest.Mock).mockReturnValue({ id: TEST_PROFILE_ID });
 
+    // Set a default mock implementation for initial clearing
     mockCreateClient.mockImplementation(() =>
       getMockSupabaseClient(
         {
           data: null,
           error: null,
-          count: null,
+          count: 0,
           status: 200,
           statusText: 'OK',
         } as unknown as PostgrestSingleResponse<ProfileData>,
@@ -160,6 +163,7 @@ describe('PublicProfilePage', () => {
 
   // --- Test Case 1: Initial Loading State ---
   test('1. Renders loading state initially', async () => {
+    // Create a promise that never resolves to simulate loading indefinitely
     const delayedProfileResponse = new Promise<PostgrestSingleResponse<ProfileData>>(() => {});
 
     mockCreateClient.mockReturnValue({
@@ -180,7 +184,7 @@ describe('PublicProfilePage', () => {
     expect(screen.getByText(/Loading profile.../i)).toBeInTheDocument();
   });
 
-  // --- Test Case 2: Profile Load Error State ---
+  // --- Test Case 2: Profile Load Error State (e.g., 500 error) ---
   test('2. Renders error message when profile fetching fails', async () => {
     const errorResponse: PostgrestSingleResponse<ProfileData> = {
       data: null,
@@ -202,19 +206,20 @@ describe('PublicProfilePage', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Error')).toBeInTheDocument();
+      // The component's catch block sets the user-friendly error string
       expect(screen.getByText('Failed to load profile')).toBeInTheDocument();
     });
   });
 
-  // --- Test Case 3: Profile Not Found State ---
-  test('3. Renders "Profile Not Found" when the profile does not exist', async () => {
+  // --- Test Case 3: Profile Not Found State (data is null, error is null) ---
+  test('3. Renders the profile not found error state when profile data is null (status 200)', async () => {
     const notFoundResponse: PostgrestSingleResponse<ProfileData> = {
       data: null,
       error: null,
-      count: null,
+      count: 0,
       status: 200,
       statusText: 'OK',
-    } as unknown as PostgrestSingleResponse<ProfileData>;
+    } as unknown as PostgrestSingleResponse<ProfileData>; // data: null, error: null indicates no row found
 
     const client = getMockSupabaseClient(notFoundResponse, mockSuccessResponse([]));
     mockCreateClient.mockReturnValue(client);
@@ -222,13 +227,13 @@ describe('PublicProfilePage', () => {
     render(<PublicProfilePage />, { wrapper: TestWrapper });
 
     await waitFor(() => {
-      // The component logic detects null profile data and sets an internal error 'Profile not found'
+      // The component logic checks if data is null and sets the error state to 'Profile not found'
       expect(screen.getByText('Error')).toBeInTheDocument();
       expect(screen.getByText('Profile not found')).toBeInTheDocument();
     });
   });
 
-  // --- Test Case 4: Viewing Own Profile (Own Profile) ---
+  // --- Test Case 4: Viewing Own Profile (Should show Edit Link) ---
   test('4. Renders "Edit Profile" link and dog data when viewing own profile', async () => {
     (useParams as jest.Mock).mockReturnValue({ id: CURRENT_USER_ID });
 
@@ -243,12 +248,14 @@ describe('PublicProfilePage', () => {
       city: 'Exampleville',
       state: 'CA',
     };
-    const dogsData: DogData[] = [{ id: 'd1', name: 'Buddy', breed: 'Labrador' }];
+    const dogsData: DogData[] = [
+      { id: 'd1', name: 'Buddy', breed: 'Labrador', owner_id: CURRENT_USER_ID },
+    ];
 
     const profileResponse: PostgrestSingleResponse<ProfileData> = {
       data: profileData,
       error: null,
-      count: null,
+      count: 1,
       status: 200,
       statusText: 'OK',
     };
@@ -262,12 +269,13 @@ describe('PublicProfilePage', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Test User')).toBeInTheDocument();
+      // Expect the Edit Profile link since CURRENT_USER_ID matches profile ID
       expect(screen.getByRole('link', { name: /Edit Profile/i })).toBeInTheDocument();
       expect(screen.getByText(/Buddy/i)).toBeInTheDocument();
     });
   });
 
-  // --- Test Case 5: Viewing Other User's Profile (Other User) ---
+  // --- Test Case 5: Viewing Other User's Profile (Should show Message Button) ---
   test('5. Renders "Send Message" button and no "Edit Profile" link when viewing another user', async () => {
     const OTHER_PROFILE_ID = 'profile-456';
     (useParams as jest.Mock).mockReturnValue({ id: OTHER_PROFILE_ID });
@@ -287,7 +295,7 @@ describe('PublicProfilePage', () => {
     const profileResponse: PostgrestSingleResponse<ProfileData> = {
       data: profileData,
       error: null,
-      count: null,
+      count: 1,
       status: 200,
       statusText: 'OK',
     };
@@ -300,7 +308,10 @@ describe('PublicProfilePage', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Friend Pal')).toBeInTheDocument();
+      // Expect the Send Message button since current user is logged in but IDs don't match
       expect(screen.getByRole('button', { name: /Send Message/i })).toBeInTheDocument();
+      // Ensure the Edit Profile link is NOT present
+      expect(screen.queryByRole('link', { name: /Edit Profile/i })).not.toBeInTheDocument();
     });
   });
 });
