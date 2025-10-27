@@ -1,8 +1,5 @@
 'use client';
 import { useCallback, useState, useEffect, useMemo, useRef } from 'react';
-import MeetingModal from '@/components/MeetingModal';
-import MessageModal from '@/components/MessageModal';
-import { supabase } from '@/libs/supabase';
 import { useSupabaseAuth } from '@/libs/supabase/hooks';
 import { supabase } from '@/libs/supabase';
 import MessageModal from '@/components/MessageModal';
