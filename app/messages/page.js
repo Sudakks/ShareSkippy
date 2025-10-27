@@ -11,13 +11,6 @@ export default function MessagesPage() {
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [messages, setMessages] = useState([]);
 
-  // Debug messages state changes
-  useEffect(() => {
-    console.log('[Messages] State updated - messages count:', messages.length);
-    if (messages.length > 0) {
-      console.log('[Messages] First message:', messages[0]);
-    }
-  }, [messages]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [newMessage, setNewMessage] = useState('');
@@ -35,7 +28,6 @@ export default function MessagesPage() {
   const [error, setError] = useState(null);
   const abortControllerRef = useRef(null);
 
-  // Create a stable key that changes per conversation selection
   const selectedConversationKey = useMemo(() => {
     const c = selectedConversation;
     if (!c) return 'none';
@@ -44,6 +36,46 @@ export default function MessagesPage() {
     );
   }, [selectedConversation]);
 
+  const fetchMessages = useCallback(
+    async (conversationId) => {
+      if (!conversationId || !selectedConversation) return;
+
+      try {
+        const { participant1_id, participant2_id } = selectedConversation;
+
+        const { data, error } = await supabase
+          .from('messages')
+          .select(
+            `
+            *,
+            sender:profiles!messages_sender_id_fkey (
+              id,
+              first_name,
+              last_name,
+              profile_photo_url
+            )
+            `
+          )
+          .or(
+            // Filter for messages between p1 and p2 in either direction
+            `and(sender_id.eq.${participant1_id},recipient_id.eq.${participant2_id}),and(sender_id.eq.${participant2_id},recipient_id.eq.${participant1_id})`
+          )
+          .order('created_at', { ascending: true });
+
+        if (error) {
+          console.error('[fetchMessages] supabase error', error);
+          throw error;
+        }
+
+        return data || [];
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+        return [];
+      }
+    },
+    [selectedConversation]
+  );
+
   useEffect(() => {
     if (!selectedConversation) {
       setMessages([]);
@@ -51,44 +83,29 @@ export default function MessagesPage() {
       return;
     }
 
-    console.log('[Messages] Starting fetch for conversation:', selectedConversation.id);
-
-    // Cancel any ongoing request
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
 
-    // Create new abort controller for this request
     abortControllerRef.current = new AbortController();
     let cancelled = false;
 
     setLoading(true);
-    // Don't clear messages immediately - let the new data replace it
     setError(null);
 
     (async () => {
       try {
         const data = await fetchMessages(selectedConversation.id);
-        console.log('[Messages] fetchMessages returned:', data?.length ?? 0, 'messages');
-        // Only update if not cancelled and not aborted
+
         if (!cancelled && !abortControllerRef.current?.signal.aborted) {
-          console.log('[Messages] Setting messages in state...');
           setMessages(data || []);
-          // Add a small delay to see if messages persist
-          setTimeout(() => {
-            console.log('[Messages] Messages after 1 second:', data?.length ?? 0);
-          }, 1000);
-        } else {
-          console.log('[Messages] Request was cancelled or aborted, not updating state');
         }
       } catch (e) {
-        // Only show error if not cancelled and not aborted
         if (!cancelled && !abortControllerRef.current?.signal.aborted) {
           console.error('load messages failed', e);
           setError('Failed to load messages. Please try again.');
         }
       } finally {
-        // Only update loading state if not cancelled and not aborted
         if (!cancelled && !abortControllerRef.current?.signal.aborted) {
           setLoading(false);
         }
@@ -97,15 +114,13 @@ export default function MessagesPage() {
 
     return () => {
       cancelled = true;
-      // Don't call setState after unmount/switch
     };
-  }, [selectedConversationKey]); // IMPORTANT: depend on the key
+  }, [selectedConversationKey, fetchMessages]);
 
-  // Real-time updates for the active conversation
   useEffect(() => {
     if (!selectedConversation) return;
 
-    const { participant1_id, participant2_id, availability_id } = selectedConversation;
+    const { participant1_id, participant2_id } = selectedConversation;
 
     const channel = supabase
       .channel(`messages:${selectedConversationKey}`)
@@ -116,10 +131,8 @@ export default function MessagesPage() {
           (m.sender_id === participant1_id && m.recipient_id === participant2_id) ||
           (m.sender_id === participant2_id && m.recipient_id === participant1_id);
 
-        // Only check participants, ignore availability_id completely
         if (matchesParticipants) {
           setMessages((prev) => {
-            // avoid duplicates
             if (prev.some((x) => x.id === m.id)) return prev;
             return [...prev, m].sort((a, b) => (a.created_at < b.created_at ? -1 : 1));
           });
@@ -138,7 +151,6 @@ export default function MessagesPage() {
     try {
       setLoading(true);
 
-      // Fetch conversations where the current user is a participant
       const { data, error } = await supabase
         .from('conversations')
         .select(
@@ -161,14 +173,13 @@ export default function MessagesPage() {
             title,
             post_type
           )
-        `
+          `
         )
         .or(`participant1_id.eq.${user.id},participant2_id.eq.${user.id}`)
         .order('last_message_at', { ascending: false });
 
       if (error) throw error;
 
-      // Process conversations to show the other participant
       const processedConversations = data.map((conv) => {
         const otherParticipant =
           conv.participant1_id === user.id ? conv.participant2 : conv.participant1;
@@ -181,79 +192,23 @@ export default function MessagesPage() {
       });
 
       setConversations(processedConversations);
+
+      // Select the first conversation if none is selected
+      if (processedConversations.length > 0 && !selectedConversation) {
+        setSelectedConversation(processedConversations[0]);
+      }
     } catch (error) {
       console.error('Error fetching conversations:', error);
     } finally {
       setLoading(false);
     }
-  }, [user, selectedConversation, setSelectedConversation]);
+  }, [user, selectedConversation]);
 
   useEffect(() => {
     if (user && !authLoading) {
       fetchConversations();
     }
   }, [user, authLoading, fetchConversations]);
-
-  const fetchMessages = useCallback(
-    async (conversationId) => {
-      if (!conversationId || !selectedConversation) return;
-
-      try {
-        const { participant1_id, participant2_id } = selectedConversation;
-
-        // Fetch messages arguments
-
-        // First, let's test if we can fetch ANY messages at all
-        const { data: testMessages, error: testError } = await supabase
-          .from('messages')
-          .select('id, sender_id, recipient_id, content')
-          .limit(3);
-
-        // Test messages in DB
-        if (testMessages && testMessages.length > 0) {
-          // Sample message available
-        }
-        if (testError) {
-          console.error('[fetchMessages] Test error:', testError);
-        }
-
-        // Simplified query - only filter by participants, ignore availability_id completely
-        const { data, error } = await supabase
-          .from('messages')
-          .select(
-            `
-          *,
-          sender:profiles!messages_sender_id_fkey (
-            id,
-            first_name,
-            last_name,
-            profile_photo_url
-          )
-        `
-          )
-          .or(
-            `and(sender_id.eq.${participant1_id},recipient_id.eq.${participant2_id}),and(sender_id.eq.${participant2_id},recipient_id.eq.${participant1_id})`
-          )
-          .order('created_at', { ascending: true });
-
-        // Log result size/errors
-        // Filtered rows processed
-        if (error) {
-          console.error('[fetchMessages] supabase error', error);
-          throw error;
-        }
-
-        // Returning messages
-
-        // Return the data so it can be used by the caller
-        return data || [];
-      } catch (error) {
-        console.error('Error fetching messages:', error);
-        return []; // Return empty array on error
-      }
-    },
-    [selectedConversation]
-  );
 
   const sendMessage = async (e) => {
     e.preventDefault();
@@ -262,7 +217,6 @@ export default function MessagesPage() {
     try {
       setSending(true);
 
-      // Use the API route which handles both message creation and email sending
       const response = await fetch('/api/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -278,11 +232,8 @@ export default function MessagesPage() {
         throw new Error(errorData.error || 'Failed to send message');
       }
 
-      const result = await response.json();
-
-      // Refresh messages and conversations
+      // Refresh conversations to update the 'last_message_at' for the sidebar.
       setNewMessage('');
-      await fetchMessages(selectedConversation.id);
       await fetchConversations();
     } catch (error) {
       console.error('Error sending message:', error);
@@ -333,7 +284,6 @@ export default function MessagesPage() {
     const date = new Date(dateString);
     const now = new Date();
 
-    // Reset time to start of day for accurate date comparison
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const messageDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
     const yesterday = new Date(today);
@@ -349,6 +299,13 @@ export default function MessagesPage() {
       return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     }
   };
+
+  const scrollRef = useRef(null);
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   if (authLoading) {
     return (
@@ -511,6 +468,7 @@ export default function MessagesPage() {
               {/* Scrollable Messages */}
               <div
                 key={selectedConversationKey}
+                ref={scrollRef}
                 id="message-scroll"
                 className="
                   flex-1 min-h-0
@@ -588,7 +546,7 @@ export default function MessagesPage() {
                       // Auto-resize textarea
                       const textarea = e.target;
                       textarea.style.height = 'auto';
-                      textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px'; // Max 6 lines (20px per line)
+                      textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px'; // Max 6 lines
                     }}
                     onInput={(e) => {
                       // Auto-resize on input (for mobile)
