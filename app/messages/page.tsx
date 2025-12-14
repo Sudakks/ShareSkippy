@@ -326,14 +326,17 @@ export default function MessagesPage(): ReactElement {
       }
 
       /**
-       * ✅ On success, ONLY remove the optimistic temp message.
-       * The real message will be delivered via the existing Supabase Realtime subscription,
-       * which is already responsible for inserting new DB messages into state.
+       * IMPORTANT:
+       * We intentionally DO NOT remove the optimistic temp message here.
        *
-       * This avoids a race where we "replace" temp state while realtime inserts the same
-       * message independently, leading to duplicates or inconsistent ordering.
+       * In a perfect world, the Realtime subscription would immediately deliver the real DB row,
+       * and we could remove temp right away. In practice, Realtime can be delayed or blocked
+       * (e.g., by RLS or an unauthenticated client), which would make the message "disappear"
+       * after a successful send until the user refreshes.
+       *
+       * Instead, we keep the temp message visible and let the Realtime handler remove any matching
+       * temp message when the real message arrives (see Realtime effect below).
        */
-      setMessages((prev) => prev.filter((m) => m.id !== tempMessage.id));
 
       // Keep this to refresh sidebar ordering/last_message_at independently from message delivery.
       await fetchConversations();
@@ -456,10 +459,26 @@ export default function MessagesPage(): ReactElement {
 
           if (matchesParticipants) {
             setMessages((prev: Message[]) => {
-              // Avoid duplicates
-              if (prev.some((x) => x.id === m.id)) return prev;
-              // Add new message and re-sort
-              return [...prev, m].sort((a, b) => (a.created_at < b.created_at ? -1 : 1));
+              // 1) Remove any optimistic temp message that likely corresponds to this real message.
+              // We only create temp messages for the sender, so match by (sender, recipient, content).
+              // This avoids duplicates without relying on the API response to "replace" state.
+              const withoutMatchingTemps = prev.filter((x) => {
+                const isTemp = x.id.startsWith('temp-');
+                if (!isTemp) return true;
+                return !(
+                  x.sender_id === m.sender_id &&
+                  x.recipient_id === m.recipient_id &&
+                  x.content === m.content
+                );
+              });
+
+              // 2) Avoid duplicates by real message id
+              if (withoutMatchingTemps.some((x) => x.id === m.id)) return withoutMatchingTemps;
+
+              // 3) Add new message and re-sort
+              return [...withoutMatchingTemps, m].sort((a, b) =>
+                a.created_at < b.created_at ? -1 : 1
+              );
             });
           }
         }
