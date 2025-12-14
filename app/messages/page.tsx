@@ -303,14 +303,9 @@ export default function MessagesPage(): ReactElement {
       if (!response.ok) {
         //remove the tempMessage
         setMessages((prev) => prev.filter((m) => m.id !== tempMessage.id));
-
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to send message');
       }
-
-      //if success, replace the tempMessage with real one
-      const { message: realMessage } = await response.json();
-      setMessages((prev) => prev.map((m) => (m.id === tempMessage.id ? realMessage : m)));
 
       await fetchConversations();
     } catch (error) {
@@ -432,10 +427,22 @@ export default function MessagesPage(): ReactElement {
 
           if (matchesParticipants) {
             setMessages((prev: Message[]) => {
+              //delete mapped tempMessage
+              const withoutTemps = prev.filter((x) => {
+                const isTemp = x.id.startsWith('temp-');
+                if (!isTemp) return true;
+
+                return !(
+                  x.sender_id === m.sender_id &&
+                  x.recipient_id === m.recipient_id &&
+                  x.content === m.content
+                );
+              });
+
               // Avoid duplicates
-              if (prev.some((x) => x.id === m.id)) return prev;
+              if (withoutTemps.some((x) => x.id === m.id)) return withoutTemps;
               // Add new message and re-sort
-              return [...prev, m].sort((a, b) => (a.created_at < b.created_at ? -1 : 1));
+              return [...withoutTemps, m].sort((a, b) => (a.created_at < b.created_at ? -1 : 1));
             });
           }
         }
