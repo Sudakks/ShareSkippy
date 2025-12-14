@@ -22,7 +22,8 @@ import {
   SyntheticEvent,
 } from 'react';
 import Image from 'next/image';
-import { supabase } from '@/libs/supabase';
+import { supabase as fallbackSupabase } from '@/libs/supabase';
+import { createClient } from '@/libs/supabase/client';
 import MessageModal from '@/components/MessageModal';
 import MeetingModal from '@/components/MeetingModal';
 import { useProtectedRoute } from '@/hooks/useProtectedRoute'; // Assumed path
@@ -122,6 +123,22 @@ export default function MessagesPage(): ReactElement {
     user: User;
     isLoading: boolean;
   };
+
+  /**
+   * IMPORTANT:
+   * Use the same cookie/session-aware Supabase browser client as the rest of the app.
+   * If we subscribe with an unauthenticated/anon client, RLS can prevent the sender
+   * from receiving Realtime inserts—making new messages appear only after a refresh.
+   */
+  const supabase = useMemo(() => {
+    // In production, createClient() should always work.
+    // In unit tests, env vars may be missing; fall back to the mocked singleton.
+    try {
+      return createClient();
+    } catch {
+      return fallbackSupabase;
+    }
+  }, []);
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
@@ -308,10 +325,17 @@ export default function MessagesPage(): ReactElement {
         throw new Error(errorData.error || 'Failed to send message');
       }
 
-      //if success, replace the tempMessage with real one
-      const { message: realMessage } = await response.json();
-      setMessages((prev) => prev.map((m) => (m.id === tempMessage.id ? realMessage : m)));
+      /**
+       * ✅ On success, ONLY remove the optimistic temp message.
+       * The real message will be delivered via the existing Supabase Realtime subscription,
+       * which is already responsible for inserting new DB messages into state.
+       *
+       * This avoids a race where we "replace" temp state while realtime inserts the same
+       * message independently, leading to duplicates or inconsistent ordering.
+       */
+      setMessages((prev) => prev.filter((m) => m.id !== tempMessage.id));
 
+      // Keep this to refresh sidebar ordering/last_message_at independently from message delivery.
       await fetchConversations();
     } catch (error) {
       console.error('Error sending message:', error);
