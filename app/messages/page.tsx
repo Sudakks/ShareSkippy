@@ -308,10 +308,17 @@ export default function MessagesPage(): ReactElement {
         throw new Error(errorData.error || 'Failed to send message');
       }
 
-      //if success, replace the tempMessage with real one
-      const { message: realMessage } = await response.json();
-      setMessages((prev) => prev.map((m) => (m.id === tempMessage.id ? realMessage : m)));
+      /**
+       * ✅ On success, ONLY remove the optimistic temp message.
+       * The real message will be delivered via the existing Supabase Realtime subscription,
+       * which is already responsible for inserting new DB messages into state.
+       *
+       * This avoids a race where we "replace" temp state while realtime inserts the same
+       * message independently, leading to duplicates or inconsistent ordering.
+       */
+      setMessages((prev) => prev.filter((m) => m.id !== tempMessage.id));
 
+      // Keep this to refresh sidebar ordering/last_message_at independently from message delivery.
       await fetchConversations();
     } catch (error) {
       console.error('Error sending message:', error);
